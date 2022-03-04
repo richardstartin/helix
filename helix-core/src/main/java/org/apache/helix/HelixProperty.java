@@ -57,6 +57,11 @@ public class HelixProperty {
     private long _modifiedTime;
     private long _ephemeralOwner;
 
+    public Stat(ZNRecord record) {
+      this(record.getVersion(), record.getCreationTime(), record.getModifiedTime(),
+          record.getEphemeralOwner());
+    }
+
     public Stat(int version, long creationTime, long modifiedTime, long ephemeralOwner) {
       _version = version;
       _creationTime = creationTime;
@@ -164,7 +169,8 @@ public class HelixProperty {
    * @param record
    */
   public HelixProperty(ZNRecord record) {
-    this(record, record.getId());
+    _record = record;
+    _stat = new Stat(_record);
   }
 
   /**
@@ -175,8 +181,7 @@ public class HelixProperty {
   public HelixProperty(ZNRecord record, String id) {
     _record = (record instanceof SessionAwareZNRecord) ? new SessionAwareZNRecord(record, id)
         : new ZNRecord(record, id);
-    _stat = new Stat(_record.getVersion(), _record.getCreationTime(), _record.getModifiedTime(),
-        _record.getEphemeralOwner());
+    _stat = new Stat(_record);
   }
 
   /**
